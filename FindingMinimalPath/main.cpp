@@ -1,26 +1,64 @@
 #include "Matrix.h"
 #include <string>
 
-#define N 6
-#define TRANSIT_ROUTES -1
 
-void print_pathes(const Matrix& vertex_matrix, const Matrix& length_matrix, int16_t need_path_size, char vertex_start = 'A')
+void print_pathes(const Matrix& vertex_matrix, const Matrix& length_matrix)
 {
-	if (need_path_size > N - 1)
+	bool print_all_pathes = false;
+	char vertex_start = 'A';
+	int16_t need_transit_size = -1;
+	int16_t n = vertex_matrix.get_number_of_vertex();
+
+	char choice = ' ';
+	while (choice != 'y' && choice != 'n')
 	{
-		std::cout << "Incorrect path size!" << std::endl;
-		return;
+		std::cout << "Print all transit pathes? (y/n): ";
+		std::cin >> choice;
+	}
+
+	if (choice == 'y')
+	{
+		print_all_pathes = true;
+	}
+	else
+	{
+		std::cout << "Enter the initial vertex to build the tree: ";
+		std::cin >> vertex_start;
+		
+		if (vertex_start > 'A' + n - 1 || vertex_start < 'A')
+		{
+			std::cout << "Incorrect vertex!" << std::endl;
+			return;
+		}
+
+		std::cout << "Enter the minimal transit size (Enter -1 to print all): ";
+		std::cin >> need_transit_size;
+
+		if (need_transit_size > n - 1 || need_transit_size < -1)
+		{
+			std::cout << "Incorrect transit size!" << std::endl;
+			return;
+		}
 	}
 
 	uint16_t start = static_cast<uint16_t>(vertex_start - 'A');
 	uint16_t end = 0;
 	std::string path;
 
-	std::cout << "The Shortest "<< ((need_path_size == -1) ? "" : (std::to_string(need_path_size)+'-')) << "trinsit routes:" << std::endl;
-
-	for (int16_t i = start; i < N; ++i, ++start)
+	if (print_all_pathes)
 	{
-		for (int16_t j = 0; j < N; ++j, ++end)
+		std::cout << "The shortest transit routes:" << std::endl;
+	}
+	else
+	{
+		std::cout << "The shortest " << ((need_transit_size == -1) ? "" : (std::to_string(need_transit_size) + '-')) 
+			<< "transit routes from the vertex " << vertex_start << ":" << std::endl;
+	}
+
+
+	for (int16_t i = start; i < n; ++i, ++start)
+	{
+		for (int16_t j = 0; j < n; ++j, ++end)
 		{
 			path = "";
 			uint16_t next_point = vertex_matrix.at(start, end);
@@ -34,10 +72,13 @@ void print_pathes(const Matrix& vertex_matrix, const Matrix& length_matrix, int1
 				next_point = vertex_matrix.at(next_point - 'A', end);
 			}
 
-			if (path.length() == need_path_size || need_path_size == -1)
+			if ((path.length() - 1) == need_transit_size || need_transit_size == -1)
 				std::cout << path << "[" << length_matrix.at(start, end) << "]" << std::endl;
 		}
 		end = 0;
+		
+		if (!print_all_pathes)
+			break;
 	}
 }
 
@@ -48,7 +89,8 @@ Matrix matrix_method(const Matrix& mat)
 
 	std::cout << std::endl;
 
-	for (int16_t i = 0; i < N - 1; ++i)
+	int16_t n = mat.get_number_of_vertex();
+	for (int16_t i = 0; i < n - 1; ++i)
 	{
 		std::cout << "Interation " << (i + 1) << ":\n" << dist << std::endl;
 		dist.multiply(mat, MATRIX_METHOD);
@@ -60,8 +102,9 @@ Matrix matrix_method(const Matrix& mat)
 void floyd_method(const Matrix& dist, const Matrix& mat)
 {
 	Matrix g(mat);
-
-	for (int16_t i = 0, j = 0; i < N; ++i, ++j)
+	
+	int16_t n = g.get_number_of_vertex();
+	for (int16_t i = 0, j = 0; i < n; ++i, ++j)
 	{
 		g.at(i, j) = INF;
 	}
@@ -72,12 +115,17 @@ void floyd_method(const Matrix& dist, const Matrix& mat)
 	g.print_points();
 
 	std::cout << std::endl;
-	print_pathes(g, dist, TRANSIT_ROUTES, 'F');
+	print_pathes(g, dist);
 }
 
 int main()
 {
-	Matrix mat(N, N);
+	int16_t n = 0;
+
+	std::cout << "Enter number of vertex: ";
+	std::cin >> n;
+
+	Matrix mat(n, n);
 	std::cout << "Enter matrix [-1 == Inf]:" << std::endl;
 	std::cin >> mat;
 

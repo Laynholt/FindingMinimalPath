@@ -20,9 +20,14 @@ Matrix::~Matrix()
 	delete[] _arr_ptr;
 }
 
-int16_t Matrix::get_size()
+int16_t Matrix::get_size() const
 {
 	return _size;
+}
+
+int16_t Matrix::get_number_of_vertex() const
+{
+	return _rows;
 }
 
 uint16_t& Matrix::at(int16_t rows, int16_t cols) const

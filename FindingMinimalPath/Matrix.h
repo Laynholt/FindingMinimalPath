@@ -17,7 +17,8 @@ public:
 	Matrix(const Matrix& mat);
 	~Matrix();
 
-	int16_t get_size();
+	int16_t get_size() const;
+	int16_t get_number_of_vertex() const;
 
 	uint16_t& at(int16_t rows, int16_t cols) const;
 	void copy(const Matrix& mat);
