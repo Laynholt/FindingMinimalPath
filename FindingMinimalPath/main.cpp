@@ -55,7 +55,7 @@ void print_pathes(const Matrix& vertex_matrix, const Matrix& length_matrix)
 			<< "transit routes from the vertex " << vertex_start << ":" << std::endl;
 	}
 
-
+	bool was_printed = false;
 	for (int16_t i = start; i < n; ++i, ++start)
 	{
 		for (int16_t j = 0; j < n; ++j, ++end)
@@ -73,12 +73,19 @@ void print_pathes(const Matrix& vertex_matrix, const Matrix& length_matrix)
 			}
 
 			if ((path.length() - 1) == need_transit_size || need_transit_size == -1)
+			{
 				std::cout << path << "[" << length_matrix.at(start, end) << "]" << std::endl;
+				was_printed = true;
+			}
 		}
 		end = 0;
-		
+
 		if (!print_all_pathes)
+		{
+			if (!was_printed)
+				std::cout << "None" << std::endl;
 			break;
+		}
 	}
 }
 
